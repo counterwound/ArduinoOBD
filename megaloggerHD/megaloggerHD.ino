@@ -107,10 +107,18 @@ void showPIDData(byte pid, int value)
         break;
     case PID_SPEED:
         if (value < 1000) {
+            int speed_mph = (int) (0.621*value);
+          
             lcd.setFontSize(FONT_SIZE_XLARGE);
             lcd.setCursor(50,3);
             setColorByValue(value, 60, 100, 160);
-            lcd.printInt(value, 3);
+            lcd.printInt(speed_mph, 3);
+
+            int shaft_rpm = (int) (23.95*value);
+            lcd.setFontSize(FONT_SIZE_XLARGE);
+            lcd.setCursor(16, 13);
+            setColorByValue(value, 60, 100, 160);
+            lcd.printInt(shaft_rpm, 6);
 
 #if USE_GPS
             if (gpsSpeed != -1) {
@@ -130,13 +138,13 @@ void showPIDData(byte pid, int value)
 #endif
         }
         break;
-    case PID_ENGINE_LOAD:
-        lcd.setFontSize(FONT_SIZE_XLARGE);
-        lcd.setCursor(50, 13);
-        if (value >= 100) value = 99;
-        setColorByValue(value, 75, 80, 100);
-        lcd.printInt(value, 3);
-        break;
+//    case PID_ENGINE_LOAD:
+//        lcd.setFontSize(FONT_SIZE_XLARGE);
+//        lcd.setCursor(50, 13);
+//        if (value >= 100) value = 99;
+//        setColorByValue(value, 75, 80, 100);
+//        lcd.printInt(value, 3);
+//        break;
     case PID_THROTTLE:
         lcd.setFontSize(FONT_SIZE_MEDIUM);
         lcd.setCursor(102, 27);
@@ -197,14 +205,20 @@ void initScreen()
     lcd.setColor(RGB16_CYAN);
     lcd.setFontSize(FONT_SIZE_MEDIUM);
     lcd.setCursor(110,4);
-    lcd.print("kph");
+//    lcd.print("kph");
+    lcd.print("MPH");
     lcd.setCursor(110, 9);
     lcd.print("RPM");
+//    lcd.setFontSize(FONT_SIZE_SMALL);
+//    lcd.setCursor(110, 14);
+//    lcd.print("ENGINE");
+//    lcd.setCursor(110, 15);
+//    lcd.print("LOAD %");
     lcd.setFontSize(FONT_SIZE_SMALL);
     lcd.setCursor(110, 14);
-    lcd.print("ENGINE");
+    lcd.print("SHAFT");
     lcd.setCursor(110, 15);
-    lcd.print("LOAD %");
+    lcd.print("RPM");
 
     lcd.setFontSize(FONT_SIZE_MEDIUM);
     lcd.setCursor(208, 3);
