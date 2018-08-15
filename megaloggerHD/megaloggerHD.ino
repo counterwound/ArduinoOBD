@@ -794,7 +794,7 @@ void setup()
 void loop()
 {
     static byte index2 = 0;
-    const byte pids[]= {PID_RPM, PID_SPEED, PID_THROTTLE, PID_ENGINE_LOAD};
+    const byte pids[]= {PID_RUNTIME,PID_RPM, PID_SPEED, PID_THROTTLE, PID_ENGINE_LOAD};
     const byte pids2[] = {PID_COOLANT_TEMP, PID_INTAKE_TEMP, PID_ENGINE_FUEL_RATE};
     int values[sizeof(pids)] = {0};
     uint32_t pidTime = millis();
