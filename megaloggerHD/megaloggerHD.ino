@@ -51,6 +51,10 @@ byte state = 0;
 void processMEMS();
 void processGPS();
 
+
+    int shaft_rpm;
+    int engine_rpm;
+
 CDataLogger logger;
 
 #ifdef OBD_ADAPTER_I2C
@@ -97,6 +101,7 @@ void setColorByValue(int value, int threshold1, int threshold2, int threshold3)
 void showPIDData(byte pid, int value)
 {
     char buf[8];
+    
     switch (pid) {
     case PID_RPM:
         lcd.setFontSize(FONT_SIZE_XLARGE);
@@ -104,6 +109,7 @@ void showPIDData(byte pid, int value)
         if (value >= 10000) break;
         setColorByValue(value, 2500, 3500, 5000);
         lcd.printInt(value, 6);
+        engine_rpm = value;        
         break;
     case PID_SPEED:
         if (value < 1000) {
@@ -114,12 +120,11 @@ void showPIDData(byte pid, int value)
             setColorByValue(value, 60, 100, 160);
             lcd.printInt(speed_mph, 3);
 
-            int shaft_rpm = (int) (23.95*value);
+            shaft_rpm = (int) (23.95*value);
             lcd.setFontSize(FONT_SIZE_XLARGE);
             lcd.setCursor(16, 13);
             setColorByValue(value, 60, 100, 160);
             lcd.printInt(shaft_rpm, 6);
-
 #if USE_GPS
             if (gpsSpeed != -1) {
                 lcd.setFontSize(FONT_SIZE_SMALL);
@@ -138,13 +143,13 @@ void showPIDData(byte pid, int value)
 #endif
         }
         break;
-//    case PID_ENGINE_LOAD:
-//        lcd.setFontSize(FONT_SIZE_XLARGE);
-//        lcd.setCursor(50, 13);
-//        if (value >= 100) value = 99;
-//        setColorByValue(value, 75, 80, 100);
-//        lcd.printInt(value, 3);
-//        break;
+    case PID_ENGINE_LOAD:
+        lcd.setFontSize(FONT_SIZE_XLARGE);
+        lcd.setCursor(50+310, 13);
+        if (value >= 100) value = 99;
+        setColorByValue(value, 75, 80, 100);
+        lcd.printInt(value, 3);
+        break;
     case PID_THROTTLE:
         lcd.setFontSize(FONT_SIZE_MEDIUM);
         lcd.setCursor(102, 27);
@@ -167,6 +172,10 @@ void showPIDData(byte pid, int value)
         }
         break;
     }
+
+    lcd.setCursor(200, 14);
+    lcd.print((float) shaft_rpm/(engine_rpm+0.0001));
+    
     lcd.setColor(RGB16_WHITE);
 }
 
@@ -205,15 +214,9 @@ void initScreen()
     lcd.setColor(RGB16_CYAN);
     lcd.setFontSize(FONT_SIZE_MEDIUM);
     lcd.setCursor(110,4);
-//    lcd.print("kph");
     lcd.print("MPH");
     lcd.setCursor(110, 9);
     lcd.print("RPM");
-//    lcd.setFontSize(FONT_SIZE_SMALL);
-//    lcd.setCursor(110, 14);
-//    lcd.print("ENGINE");
-//    lcd.setCursor(110, 15);
-//    lcd.print("LOAD %");
     lcd.setFontSize(FONT_SIZE_SMALL);
     lcd.setCursor(110, 14);
     lcd.print("SHAFT");
@@ -223,10 +226,15 @@ void initScreen()
     lcd.setFontSize(FONT_SIZE_MEDIUM);
     lcd.setCursor(208, 3);
     lcd.print("Elapsed");
-    lcd.setCursor(204, 8);
-    lcd.print("Distance");
-    lcd.setCursor(180, 13);
-    lcd.print("Average Speed");
+//    lcd.setCursor(204, 8);
+//    lcd.print("Distance");
+//    lcd.setCursor(180, 13);
+//    lcd.print("Average Speed");
+    lcd.setFontSize(FONT_SIZE_SMALL);
+    lcd.setCursor(110+155, 14);
+    lcd.print("SHAFT/");
+    lcd.setCursor(110+155, 15);
+    lcd.print("ENGINE");
 
     lcd.setCursor(16, 24);
     lcd.print("Battery     V");
@@ -248,12 +256,17 @@ void initScreen()
     lcd.setCursor(180, 36);
     lcd.print("SAT:");
     
-    lcd.setCursor(340, 3);
-    lcd.print("Accelerometer");
-    lcd.setCursor(356, 8);
-    lcd.print("Gyroscope");
-    lcd.setCursor(348, 13);
-    lcd.print("Temperature");
+//    lcd.setCursor(340, 3);
+//    lcd.print("Accelerometer");
+//    lcd.setCursor(356, 8);
+//    lcd.print("Gyroscope");
+//    lcd.setCursor(348, 13);
+//    lcd.print("Temperature");
+    lcd.setFontSize(FONT_SIZE_SMALL);
+    lcd.setCursor(110+310, 14);
+    lcd.print("ENGINE");
+    lcd.setCursor(110+310, 15);
+    lcd.print("LOAD %");
 
     lcd.setCursor(348, 24);
     lcd.print("OBD Interval");
@@ -488,17 +501,17 @@ void logOBDData(byte pid, int value)
         // estimate distance travelled since last speed update
         distance += (uint32_t)(value + lastSpeed) * (logger.dataTime - lastSpeedTime) / 6000;
         // display speed
-        lcd.setFontSize(FONT_SIZE_MEDIUM);
-        lcd.setCursor(220, 10);
-        lcd.printInt(distance / 1000);
-        lcd.write('.');
-        lcd.printInt(((uint16_t)distance % 1000) / 100);
-        lcd.print(" km");
+//        lcd.setFontSize(FONT_SIZE_MEDIUM);
+//        lcd.setCursor(220, 10);
+//        lcd.printInt(distance / 1000);
+//        lcd.write('.');
+//        lcd.printInt(((uint16_t)distance % 1000) / 100);
+//        lcd.print(" km");
         // calculate and display average speed
         int avgSpeed = (unsigned long)distance * 3600 / (millis() - startTime);
-        lcd.setCursor(220, 15);
-        lcd.printInt(avgSpeed);
-        lcd.print(" km/h");
+//        lcd.setCursor(220, 15);
+//        lcd.printInt(avgSpeed);
+//        lcd.print(" km/h");
 
         lastSpeed = value;
         lastSpeedTime = logger.dataTime;
